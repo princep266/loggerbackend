@@ -2,7 +2,7 @@ import mongoose, { model } from "mongoose";
 
 const workoutSessionSchema = new mongoose.Schema({
     userId:{
-        type : model.Schema.Types.ObjectId,
+        type : mongoose.Schema.Types.ObjectId,
         ref:'User',
         required: true
     },

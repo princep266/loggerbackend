@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const exerciseSchema = new mongoose.model({
+const exerciseSchema = new mongoose.Schema({
     userId:{
         type : mongoose.Schema.Types.ObjectId,
         ref:'User',
@@ -20,22 +20,6 @@ const exerciseSchema = new mongoose.model({
         type: Boolean,
         required: false,
         default: false
-    },
-    sets:{
-        type: Number,
-        required: true
-    },
-    reps:{
-        type: Number,
-        required: true
-    },
-    weight:{
-        type: Number,
-        required: false
-    },
-    date:{
-        type: Date,
-        required: true
     }
 },{timestamps:true});
 
