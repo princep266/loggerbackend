@@ -25,6 +25,9 @@ app.use(mongoSanitize({
 
 import cookieParser from "cookie-parser"
 
+//importing routes
+import userRouter from './routes/user.routes.js'
+
 //routes declaration
 app.get("/", (req, res) => {
     res.status(200).json({
@@ -32,6 +35,6 @@ app.get("/", (req, res) => {
     });
 });
 
-// app.use("/api/v1/users", userRouter)
+app.use("/api/v1/users", userRouter)
 
 export { app }
