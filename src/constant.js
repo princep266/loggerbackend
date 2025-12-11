@@ -1,1 +1,1 @@
-export const DB_NAME = "Arthlete"
+export const DB_NAME = "Arthlete Logger"
