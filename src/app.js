@@ -1,7 +1,7 @@
 
 import express from "express"
 import cors from "cors"
-import mongoSanitize from "express-mongo-sanitize"
+// import mongoSanitize from "express-mongo-sanitize"
 
 const app = express()
 
@@ -18,10 +18,10 @@ app.use(express.urlencoded({extended: true}))
 app.use(express.static("public"))
 app.use(cookieParser())
 
-app.use(mongoSanitize({
-    allowDots: true,
-    replaceWith: '_'
-}))
+// app.use(mongoSanitize({
+//     allowDots: true,
+//     replaceWith: '_'
+// }))
 
 import cookieParser from "cookie-parser"
 

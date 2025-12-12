@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { ApiError } from "../utils/ApiError.js";
 
 const userSchema = new mongoose.Schema({
     username :{
@@ -46,7 +47,7 @@ userSchema.pre("save", async function (next) {
     this.password = await bcrypt.hash(this.password, salt);
     next();
   } catch (error) {
-    next(error);
+    return new ApiError(500, "Error in hashing password");
   }
 });
 
