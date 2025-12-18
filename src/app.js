@@ -27,6 +27,7 @@ import cookieParser from "cookie-parser"
 
 //importing routes
 import userRouter from './routes/user.routes.js'
+import { errorHandler } from './middlewares/error.middleware.js'
 
 //routes declaration
 app.get("/", (req, res) => {
@@ -36,5 +37,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/v1/users", userRouter)
+
+// Error handling middleware (must be last)
+app.use(errorHandler);
 
 export { app }

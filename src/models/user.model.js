@@ -37,17 +37,23 @@ const userSchema = new mongoose.Schema({
         type: Number,
         required: false
     },
+    activity:{
+        type: String,
+        required: false,
+        enum: ['never', 'rarely', 'sometimes', 'always']
+    },
 },{timestamps:true});
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password"));
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) {
+    return;
+  }
 
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
-    next();
   } catch (error) {
-    return new ApiError(500, "Error in hashing password");
+    throw new ApiError(500, "Error in hashing password");
   }
 });
 
