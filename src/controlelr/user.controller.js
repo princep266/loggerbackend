@@ -340,6 +340,101 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 });
 
 
+const googleSignIn = asyncHandler(async (req, res) => {
+  const { googleId, email, name, photo } = req.body;
+
+  if (!googleId || !email) {
+    throw new ApiError(400, "Google ID and email are required");
+  }
+
+  // Check if user exists with this email or googleId
+  let user = await User.findOne({
+    $or: [{ email: email.trim() }, { googleId }]
+  });
+
+  if (user) {
+    // User exists - login
+    // Update googleId if not set
+    if (!user.googleId) {
+      user.googleId = googleId;
+      user.isGoogleUser = true;
+      await user.save({ validateBeforeSave: false });
+    }
+
+    const { accessToken, refreshToken } = await generateAccessandRefreshTokens(user._id);
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
+
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          {
+            user: loggedInUser,
+            accessToken,
+            refreshToken,
+          },
+          "User logged in successfully with Google"
+        )
+      );
+  } else {
+    // User doesn't exist - create new account
+    // Generate username from email or name
+    const baseUsername = name 
+      ? name.toLowerCase().replace(/\s+/g, '') 
+      : email.split('@')[0];
+    
+    let username = baseUsername;
+    let counter = 1;
+    
+    // Ensure username is unique
+    while (await User.findOne({ username })) {
+      username = `${baseUsername}${counter}`;
+      counter++;
+    }
+
+    const userData = {
+      username,
+      email: email.trim(),
+      googleId,
+      isGoogleUser: true,
+      password: undefined, // No password for Google users
+    };
+
+    const newUser = await User.create(userData);
+    const { accessToken, refreshToken } = await generateAccessandRefreshTokens(newUser._id);
+    const createdUser = await User.findById(newUser._id).select("-password -refreshToken");
+
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    return res
+      .status(201)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          {
+            user: createdUser,
+            accessToken,
+            refreshToken,
+          },
+          "User registered successfully with Google"
+        )
+      );
+  }
+});
+
 export {
   registerUser,
   loginUser,
@@ -349,4 +444,5 @@ export {
   getCurrentUser,
   updateAccountDetails,
   updateUserProfile,
+  googleSignIn,
 };

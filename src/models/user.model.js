@@ -14,7 +14,15 @@ const userSchema = new mongoose.Schema({
     },
     password :{
         type: String,
-        required: true
+        required: false
+    },
+    googleId: {
+        type: String,
+        required: false
+    },
+    isGoogleUser: {
+        type: Boolean,
+        default: false
     },
     gender : {
         type: String,
@@ -45,7 +53,7 @@ const userSchema = new mongoose.Schema({
 },{timestamps:true});
 
 userSchema.pre("save", async function () {
-  if (!this.isModified("password")) {
+  if (!this.isModified("password") || !this.password) {
     return;
   }
 
